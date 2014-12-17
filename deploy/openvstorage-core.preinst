@@ -1,0 +1,95 @@
+#!/bin/bash
+
+cur_dir=`dirname $0`
+cur_dir=`realpath $cur_dir`
+source $cur_dir/config
+
+# lsscsi
+yum install -y lsscsi
+
+# components
+yum install -y nfs-utils
+yum install -y avahi-libs
+yum install -y avahi-tools
+rpm -ivh http://mirrors.aliyun.com/centos/7.0.1406/os/x86_64/Packages/avahi-tools-0.6.31-13.el7.x86_64.rpm
+yum install -y snappy
+yum install -y libev
+## rabbitmq-server from rpm
+### install erlang
+yum install -y unixODBC
+rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm
+yum install -y wxBase
+yum install -y wxGTK
+rpm -ivh http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+yum install -y erlang
+rpm --import $cur_dir/deps/rabbitmq-signing-key-public.asc
+rpm -ivh rabbitmq-server
+## arakoon
+yum install -y glibc
+yum install -y ocaml
+yum install -y ocaml-camlp4
+yum install -y ocaml-findlib
+rpm -ivh $cur_dir/deps/$OVS_ARAKOON
+## volumedriver-server
+rpm -ivh $cur_dir/deps/$OVS_VDS_BASE
+rpm -ivh $cur_dir/deps/$OVS_VDS_SERVER
+### for these two rpms are converted from debian-based package
+### so we should copy files in dist-packages to site-packages
+### now only support 2.7
+rsync -arl /usr/lib/python2.7/dist-packages/* /usr/lib/python2.7/site-packages
+## ekl
+mkdir -p $OVS_ELK_PKGS
+### elasticsearch
+rpm -ivh $cur_dir/deps/$OVS_ELASTICSEARCH
+### kibana
+rsync -arl $cur_dir/deps/$OVS_KIBANA.tar.gz $OVS_ELK_PKGS
+pushd $OVS_ELK_PKGS
+  rm -rf $OVS_KIBANA
+  tar xvzf $OVS_KIBANA.tar.gz
+popd
+### logstash
+yum install -y java
+rpm -ivh $cur_dir/deps/$OVS_LOGSTASH
+rpm -ivh $cur_dir/deps/$OVS_LOGSTASH_CONTRIB
+
+### memcached
+yum install -y memcached python-memcached
+
+# virt
+yum install -y kvm libvirt libvirt-python qemu-kvm virt-install bridge-utils
+
+# copy dist-pythons to site-packages
+
+
+# python-relative
+
+##python-virtinst
+
+pip install ipython
+pip install boto
+pip install pyinotify
+
+pip install celery
+pip install suds-jurko==0.5
+pip install configobj==4.7.2
+pip install pika
+pip install protobuf
+pip install choice
+pip install pyudev
+pip install datadiff
+
+id -a ovs &> /dev/null
+if [[ $? -eq 1 ]]
+then
+  echo 'Creating OVS user'
+  useradd ovs -d /opt/OpenvStorage
+  echo '%ovs ALL=NOPASSWD: ALL' >> /etc/sudoers
+  echo 'Defaults:%ovs !requiretty' >> /etc/sudoers
+else
+  echo 'OVS user already exists'
+fi
+
+# logging
+mkdir -p /var/log/ovs/volumedriver
+chown -R ovs:ovs /var/log/ovs
+chmod 777 /var/log/ovs

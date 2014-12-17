@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Remove existing enabled sites, taking control over nginx
+if test -e /etc/nginx/conf.d/default.conf
+then
+  mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.ori
+fi
+
+# Cleanup *.pyc files
+chown -R ovs:ovs /opt/OpenvStorage
+find /opt/OpenvStorage -name *.pyc -exec rm -rf {} \;
+
+python /opt/OpenvStorage/scripts/install/openvstorage-webapps.postinst.py "__NEW_VERSION__" "$@"

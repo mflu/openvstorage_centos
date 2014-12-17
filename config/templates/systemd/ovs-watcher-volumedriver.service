@@ -1,0 +1,14 @@
+[Unit]
+Description="Watcher for Open vStorage master services"
+Wants=ovs-failovercache.service ovs-ganesha.service ovs-volumedriver.service ovs-volumerouter-consumer.service
+
+[Service]
+Environment=PYTHONPATH=/opt/OpenvStorage
+ExecStartPre=/usr/bin/python2 /opt/OpenvStorage/ovs/extensions/generic/watcher.py volumedriver wait
+ExecStart=/usr/bin/python2 /opt/OpenvStorage/ovs/extensions/generic/watcher.py volumedriver check
+Type=simple
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

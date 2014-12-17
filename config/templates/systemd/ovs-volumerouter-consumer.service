@@ -1,0 +1,15 @@
+[Unit]
+Description="ovs volumerouter consumer"
+Requires=ovs-watcher-volumedriver.service
+After=ovs-watcher-volumedriver.service
+
+[Service]
+Environment=PYTHONPATH=/opt/OpenvStorage
+WorkingDirectory=/opt/OpenvStorage
+ExecStart=/usr/bin/python2 /opt/OpenvStorage/ovs/extensions/rabbitmq/consumer.py volumerouter
+Type=simple
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

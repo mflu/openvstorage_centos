@@ -1,0 +1,14 @@
+[Unit]
+Description="Watcher for Open vStorage master services"
+Wants=ovs-nginx.service ovs-webapp-api.service ovs-scheduled-tasks.service ovs-snmp.service ovs-workers.service
+
+[Service]
+Environment=PYTHONPATH=/opt/OpenvStorage
+ExecStartPre=/usr/bin/python2 /opt/OpenvStorage/ovs/extensions/generic/watcher.py framework wait
+ExecStart=/usr/bin/python2 /opt/OpenvStorage/ovs/extensions/generic/watcher.py framework check
+Type=simple
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

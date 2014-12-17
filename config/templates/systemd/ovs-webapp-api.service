@@ -1,0 +1,15 @@
+[Unit]
+Description="webapp api"
+Requires=ovs-watcher-framework.service
+After=ovs-watcher-framework.service
+
+[Service]
+Environment=PYTHONPATH=:/opt/OpenvStorage:/opt/OpenvStorage/webapps/api
+WorkingDirectory=/opt/OpenvStorage/webapps
+ExecStart=/usr/bin/gunicorn -c /opt/OpenvStorage/config/django_gunicorn_ovs.cfg.py api.wsgi
+Type=simple
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

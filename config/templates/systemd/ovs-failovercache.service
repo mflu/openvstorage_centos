@@ -1,0 +1,13 @@
+[Unit]
+Description=ovs failovercache
+Requires=ovs-watcher-volumedriver.service
+After=ovs-watcher-volumedriver.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/failovercachehelper --config-file=/opt/OpenvStorage/config/voldrv_vpools/<VPOOL_NAME>.json --logfile=/var/log/ovs/volumedriver/foc_<VPOOL_NAME>.log
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

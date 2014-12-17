@@ -1,0 +1,12 @@
+OVS_HOME=/opt/OpenvStorage
+OVS_ARAKOON=arakoon-1.7.4-3.el7.centos.x86_64.rpm
+OVS_VDS_BASE=volumedriver-base_4.0.0.0-1.rpm
+OVS_VDS_SERVER=volumedriver-server_4.0.0.0-1.rpm
+OVS_ELK_PKGS=$OVS_HOME/env/ekl/pkgs
+OVS_KIBANA=kibana-3.1.2
+OVS_ELASTICSEARCH=elasticsearch-1.4.0.noarch.rpm
+OVS_LOGSTASH=logstash-1.4.2-1_2c0f5a1.noarch.rpm
+OVS_LOGSTASH_CONTRIB=logstash-contrib-1.4.2-1_efd53ef.noarch.rpm
+http_proxy=http://10.10.141.81:3128
+https_proxy=http://10.10.141.81:3128
+OVS_NTP_SERVER=time.qiyi.domain

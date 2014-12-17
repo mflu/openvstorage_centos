@@ -1,0 +1,16 @@
+[Unit]
+Description="rabbitMQ server"
+After=local-fs.target network.target
+
+[Service]
+Type=simple
+User=rabbitmq
+Group=rabbitmq
+Environment=HOME=/var/lib/rabbitmq
+ExecStart=/usr/lib/rabbitmq/bin/rabbitmq-server
+ExecStop=/usr/sbin/rabbitmqctl stop
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

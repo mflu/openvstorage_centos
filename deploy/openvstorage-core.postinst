@@ -1,0 +1,55 @@
+#!/bin/bash
+
+cur_dir=`dirname $0`
+cur_dir=`realpath $cur_dir`
+source $cur_dir/config
+
+# Post install deps
+pip install fabric==1.9.1
+pip install cuisine
+pip install pysnmp==4.2.5
+
+# Activate kibana
+KB_SOURCE=$OVS_ELK_PKGS/$OVS_KIBANA/src
+KB_TARGET=/opt/OpenvStorage/webapps/frontend/logging
+if test -d ${KB_TARGET}
+then
+  rm -rf ${KB_TARGET}
+fi
+mkdir -p ${KB_TARGET}
+mv ${KB_SOURCE}/* ${KB_TARGET}
+chown -R ovs:ovs ${KB_TARGET}
+cp ${KB_TARGET}/app/dashboards/guided.json ${KB_TARGET}/app/dashboards/default.json
+
+# Disable/stop default services. Will be replaced by upstart scripts
+/usr/lib/rabbitmq/bin/rabbitmq-plugins enable rabbitmq_management
+service rabbitmq-server stop
+systemctl disable rabbitmq-server
+service nginx stop
+systemctl disable nginx
+service memcached stop
+systemctl disable memcached
+service elasticsearch stop
+
+
+# Cleanup *.pyc files
+chown -R ovs:ovs /opt/OpenvStorage
+find /opt/OpenvStorage -name *.pyc -exec rm -rf {} \;
+
+# Few logstash cleanups
+usermod -a -G adm logstash
+platform=`uname -a | grep Ubuntu`
+if test "x$platform" = "x"
+then
+  chkconfig logstash off
+  /etc/init.d/logstash-web stop
+else
+  echo manual >/etc/init/logstash-web.override
+  /etc/init/logstash-web stop
+fi
+
+# Adding crontabs
+if crontab -l | grep -q 'ntpdate'; then true; else crontab -l | { cat; echo "0 * * * * /usr/sbin/ntpdate $OVS_NTP_SERVER"; } | crontab -; fi
+if crontab -l | grep -q 'ovs monitor heartbeat'; then true; else crontab -l | { cat; echo '* * * * * ovs monitor heartbeat'; } | crontab -; fi
+
+python /opt/OpenvStorage/scripts/install/openvstorage-core.postinst.py "__NEW_VERSION__" "$@"

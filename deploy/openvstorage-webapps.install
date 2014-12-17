@@ -1,0 +1,7 @@
+webapps                                           opt/OpenvStorage
+config/django/django_gunicorn_ovs.cfg.py          opt/OpenvStorage/config
+config/nginx/nginx.centos.conf                    etc/nginx/nginx.conf
+config/nginx/kibana.conf                          etc/nginx/conf.d
+config/nginx/openvstorage.conf                    etc/nginx/conf.d
+config/nginx/openvstorage_ssl.conf                etc/nginx/conf.d
+scripts/install/openvstorage-webapps.postinst.py  opt/OpenvStorage/scripts/install

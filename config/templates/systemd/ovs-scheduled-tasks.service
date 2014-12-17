@@ -1,0 +1,16 @@
+[Unit]
+Description="ovs scheduled tasks"
+Requires=ovs-watcher-framework.service
+After=ovs-watcher-framework.service
+
+[Service]
+User=ovs
+Group=ovs
+WorkingDirectory=/opt/OpenvStorage
+ExecStart=/usr/bin/celery beat -A ovs.celery_run -l info -S ovs.celery_beat.DistributedScheduler
+Type=simple
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

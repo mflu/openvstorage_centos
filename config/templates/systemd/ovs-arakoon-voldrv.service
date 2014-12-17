@@ -1,0 +1,14 @@
+[Unit]
+Description=arakoon voldrv
+After=local-fs.target network.target
+
+[Service]
+ExecStart=/usr/bin/python2 /opt/OpenvStorage/ovs/extensions/db/arakoon/ArakoonManagement.py --start --cluster voldrv
+Environment=PYTHONPATH=/opt/OpenvStorage
+WorkingDirectory=/opt/OpenvStorage
+Type=simple
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
